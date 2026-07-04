@@ -107,3 +107,25 @@ go test -tags=e2e ./...
 ```
 
 기본 테스트는 fake HTTP server를 사용하며 Toss Invest live API를 호출하지 않습니다. Live e2e 테스트는 `e2e` build tag와 `TOSSINVEST_E2E=1`로 별도 활성화해야 합니다.
+
+CLI 바이너리는 현재 플랫폼 또는 릴리스용 멀티 플랫폼 산출물로 빌드할 수 있습니다.
+
+```sh
+task build
+task build:all
+task build:all VERSION=0.1.0
+```
+
+`task build:all`은 `dist/` 아래에 Linux, macOS, Windows의 `amd64`/`arm64` tarball과 `checksums.txt`를 만듭니다.
+
+## 배포
+
+배포는 `vMAJOR.MINOR.PATCH` 태그를 push할 때만 실행됩니다. 태그가 올라가면 GitHub Actions가 generated code stale check, gofmt, 테스트, 커버리지를 확인한 뒤 CLI 바이너리를 빌드해 GitHub Release에 첨부합니다.
+
+```sh
+task deploy:tag
+task deploy:tag BUMP=minor
+task deploy:tag BUMP=major
+```
+
+`BUMP`를 생략하면 patch 버전이 자동으로 1 올라갑니다. `BUMP=minor`는 patch를 0으로 되돌리고 minor를 올리며, `BUMP=major`는 minor와 patch를 0으로 되돌리고 major를 올립니다.

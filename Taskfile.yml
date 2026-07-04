@@ -9,10 +9,32 @@ tasks:
     cmds:
       - go test ./... -cover
 
+  build:
+    desc: Build the CLI for the current platform into bin/.
+    cmds:
+      - mkdir -p bin
+      - go build -trimpath -o bin/tossinvest ./cmd/tossinvest
+
+  build:all:
+    desc: Build multi-platform release artifacts into dist/. Use VERSION=x.y.z; default is dev.
+    vars:
+      VERSION: '{{default "dev" .VERSION}}'
+    cmds:
+      - scripts/build-release-artifacts.sh "{{.VERSION}}" dist
+
   e2e:readonly:
     desc: Run read-only live e2e smoke against Toss Invest.
     cmds:
       - scripts/e2e-readonly.sh
+
+  deploy:tag:
+    desc: Create and push the next semver release tag. Use BUMP=major|minor|patch; default is patch.
+    vars:
+      BUMP: '{{default "patch" .BUMP}}'
+    deps:
+      - verify
+    cmds:
+      - scripts/deploy-tag.sh "{{.BUMP}}"
 
   verify:
     cmds:
