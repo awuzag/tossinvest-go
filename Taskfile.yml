@@ -1,0 +1,24 @@
+version: "3"
+
+tasks:
+  test:
+    cmds:
+      - go test ./...
+
+  cover:
+    cmds:
+      - go test ./... -cover
+
+  e2e:readonly:
+    desc: Run read-only live e2e smoke against Toss Invest.
+    cmds:
+      - scripts/e2e-readonly.sh
+
+  verify:
+    cmds:
+      - scripts/check-generated.sh
+      - gofmt -w .
+      - go test ./...
+      - go test ./... -coverprofile=coverage.out
+      - go tool cover -func=coverage.out
+      - git diff --check
